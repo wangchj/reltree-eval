@@ -1,0 +1,4 @@
+db.host     localhost
+db.user     user name
+db.pwd      password
+db.dbname   database name
