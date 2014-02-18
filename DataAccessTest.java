@@ -3,14 +3,23 @@ import java.sql.*;
 
 public class DataAccessTest
 {
-    public static void main(String[] args)throws InterruptedException
+    public static void main(String[] args)throws IOException, SQLException
     {
-        Timer t = new Timer();
+        Timer t = Timer.getTimer();
         for(int i = 0; i < 10; i++)
         {
             t.reset();
-            Thread.sleep(2000);
-            System.out.println(t.timeSec() + "    " + t.startTime + "    " + t.endTime);
+            int id = Operations.GetRootAL("nf_f6_d8", 335923);
+            System.out.println(t.timeSec() + "    " + id);
+        }
+
+        System.out.println();
+
+        for(int i = 0; i < 10; i++)
+        {
+            t.reset();
+            int id = Operations.GetRootNS("nf_f6_d8", 335923);
+            System.out.println(t.timeSec() + "    " + id);
         }
     }
     
@@ -36,6 +45,4 @@ public class DataAccessTest
 //                                "\t" + total);
         }
     }
-    
-    
 }
