@@ -60,6 +60,12 @@ public class Operations {
         return rset.getInt("id");
     }
     
+    /**
+     * Siblings operation via adjacency list relational model. This method returns id of
+     * nodes that are siblings of the node identified by nodeId.
+     * @param tableName The name of the table that contains the nodes.
+     * @param nodeId The nodeId.
+     */
     public static ArrayList<Integer> siblings(String tableName, int nodeId) throws IOException, SQLException
     {
         Connection con = Database.connect();
