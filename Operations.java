@@ -79,4 +79,45 @@ public class Operations {
         }
         return result;
     }
+    
+    public static ArrayList<Integer> children(String tableName, int nodeId) throws Exception
+    {
+        Connection con = Database.connect();
+        Statement s = con.createStatement();
+        String query = String.format("select * from %1$s where parent=%2$d", tableName, nodeId);
+        ResultSet rs = s.executeQuery(query);
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        while(rs.next())
+            result.add(rs.getInt("id"));
+        return result;
+    }
+    
+    /**
+     * Leaves operation for the adjacency list model.
+     * @param tableName The name of the table that contains the nodes.
+     * @param nodeId ID of the node under which the leaves reside.
+     */
+    public static ArrayList<Integer> leavesAL(String tableName, int nodeId) throws Exception
+    {
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        leavesAL(tableName, nodeId, result);
+        return result;
+    }
+    
+    /**
+     * Recursive algorithm of leaves operation for the adjacency list model.
+     * @param tableName The name of the table that contains the nodes.
+     * @param nodeId ID of the node under which the leaves reside.
+     */
+    private static void leavesAL(String tableName, int nodeId, ArrayList<Integer> result) throws Exception
+    {
+        ArrayList<Integer> children = children(tableName, nodeId);
+        if(children.size() == 0)
+        {
+            result.add(nodeId);
+            return;
+        }
+        for(int child : children)
+            leavesAL(tableName, child, result);
+    }
 }
