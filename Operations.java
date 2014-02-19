@@ -80,6 +80,12 @@ public class Operations {
         return result;
     }
     
+    /**
+     * Children operation using adjacency list model.
+     * @param tableName The name of the table that contains the nodes.
+     * @param nodeId The ID of the node for which to find the children.
+     * @return The ID of the children, or empty list if the node is a leaf node.
+     */
     public static ArrayList<Integer> children(String tableName, int nodeId) throws Exception
     {
         Connection con = Database.connect();
