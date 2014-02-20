@@ -126,4 +126,27 @@ public class Operations {
         for(int child : children)
             leavesAL(tableName, child, result);
     }
+    
+    /**
+     * Leaves operation for the nested sets model.
+     * @param tableName The name of the table that contains the nodes.
+     * @param nodeId ID of the node under which the leaves reside.
+     * @return The ID of the leaf nodes under the node of nodeId.
+     */
+    public static ArrayList<Integer> leavesNS(String tableName, int nodeId) throws Exception
+    {
+        Connection con = Database.connect();
+        Statement s = con.createStatement();
+        String query = String.format(
+            "select * from %1$s n inner join " +
+            "(select l, r from %1$s where id=%2$d) lr " +
+            "on (n.l >= lr.l and n.r <= lr.r) " +
+            "where not exists (select id from %1$s where parent=n.id);",
+            tableName, nodeId);
+        ResultSet rs = s.executeQuery(query);
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        while(rs.next())
+            result.add(rs.getInt("id"));
+        return result;
+    }
 }
