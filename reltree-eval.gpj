@@ -1,4 +1,4 @@
-!1081;s
+!1085;s
 J
 SAU0PATH+=%<JGRASP_PATHS>%;\012PATH=+%;%<JGRASP_C_PATHS>\012CYGWIN=nodosfilewarning
 SCU0PATH+=%<JGRASP_PATHS>%;\012PATH=+%;%<JGRASP_C_PATHS>\012CYGWIN=nodosfilewarning
@@ -8,18 +8,20 @@ SOU0PATH+=%<JGRASP_PATHS>%;\012PATH=+%;%<JGRASP_C_PATHS>\012CYGWIN=nodosfilewarn
 SyU0PATH+=%<PYTHON_PATH>%;\012PATH+=%<JGRASP_PATHS>%;\012CYGWIN=nodosfilewarning
 SPU0
 s#i0
-s#k0lib/mysql-connector-java-5.1.29-bin.jar\000
-s#j0lib/mysql-connector-java-5.1.29-bin.jar
+s#k0./lib/mysql-connector-java-5.1.29-bin.jar\000
+s#j0./lib/mysql-connector-java-5.1.29-bin.jar
 s#l0
-!76;g
-%\011config.txt
-%\011Timer.java
+!81;g
 %\011Database.java
 %\011DataAccessTest.java
-!76;f
-%\011config.txt
+%\011Operations.java
 %\011Timer.java
+!81;f
 %\011Database.java
 %\011DataAccessTest.java
-!13;t
-jgrJUnit0xr	
+%\011Operations.java
+%\011Timer.java
+!25;l
+%\011OperationsTest.java
+!135;t
+jgrJUnit0xr	%\011OperationsTest.java	1392872747735:P%\011Operations.java	%\011Operations.java	1392872747735:P%\011OperationsTest.java	
