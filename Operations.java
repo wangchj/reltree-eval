@@ -88,7 +88,7 @@ public class Operations {
      */
     public static ArrayList<Integer> children(String tableName, int nodeId) throws Exception
     {
-        Connection con = Database.connect();
+        Connection con = Database.getConnection();
         Statement s = con.createStatement();
         String query = String.format("select * from %1$s where parent=%2$d", tableName, nodeId);
         ResultSet rs = s.executeQuery(query);
@@ -148,5 +148,60 @@ public class Operations {
         while(rs.next())
             result.add(rs.getInt("id"));
         return result;
+    }
+    
+    /**
+     * Height operation for the adjacency list model.
+     * @param table The name of the table that contains the nodes.
+     * @param nodeId ID of the node to find the height.
+     * @return Height of subtree rooted at node of nodeId.
+     */
+    public static int heightAL(String table, int nodeId) throws Exception
+    {
+        ArrayList<Integer> ch = children(table, nodeId);
+        if(ch.isEmpty())
+            return 1;
+        int max = 0;
+        for(int c : ch)
+        {
+            int height = heightAL(table, c);
+            if(height > max)
+                max = height;
+        }
+        return max + 1;
+    }
+    
+    public static int heightNS(String table, int nodeId) throws Exception
+    {
+        return 0;
+    }
+    
+    /**
+     * Depth operation for adjacency list model.
+     * @param table the name of the table that contains the nodes.
+     * @param nodeId the id of the node to find depth.
+     * @return the depth of the node of nodeId.
+     */
+    public static int depthAL(String table, int nodeId) throws Exception
+    {
+        Connection con = Database.getConnection();
+        Statement s = con.createStatement();
+
+        //Check nodeId is valid
+        ResultSet r = s.executeQuery("select * from " + table + " where id=" + nodeId);
+        if(!r.next()) throw new Exception("nodeId is invalid");
+
+        int depth = 1;
+        int parent = r.getInt("parent");
+
+        while(parent != 0)
+        {
+            depth++;
+            r = s.executeQuery("select * from " + table + " where id=" + parent);
+            r.next();
+            parent = r.getInt("parent");
+        }
+
+        return depth;
     }
 }

@@ -110,4 +110,22 @@ public class OperationsTest
         Assert.assertTrue(r.size() == 1);
         Assert.assertTrue(r.get(0) == 3);
     }
+    
+    @Test public void heightAL() throws Exception
+    {
+        Assert.assertTrue(Operations.heightAL("nf_f2_d3", 1) == 3);
+        Assert.assertTrue(Operations.heightAL("nf_f2_d3", 2) == 2);
+        
+        Assert.assertTrue(Operations.heightAL("nf_f3_d4", 1) == 4);
+    }
+    
+    @Test public void depthAL() throws Exception
+    {
+        Assert.assertTrue(Operations.depthAL("nf_f2_d3", 1) == 1); //root node
+        Assert.assertTrue(Operations.depthAL("nf_f2_d3", 2) == 2);
+        Assert.assertTrue(Operations.depthAL("nf_f2_d3", 3) == 3);
+        Assert.assertTrue(Operations.depthAL("nf_f2_d3", 4) == 3);
+        
+        //Assert.assertTrue(Operations.depthAL("nf_f3_d4", 1) == 4);
+    }
 }
