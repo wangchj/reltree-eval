@@ -91,4 +91,23 @@ public class OperationsTest
         Assert.assertTrue(r.get(7) == 12);
         Assert.assertTrue(r.get(8) == 13);
     }
+    
+    @Test public void leavesNS() throws Exception
+    {
+        ArrayList<Integer> r = Operations.leavesNS("nf_f2_d3", 1);
+        Assert.assertTrue(r.size() == 4);
+        Assert.assertTrue(r.get(0) == 3);
+        Assert.assertTrue(r.get(1) == 4);
+        Assert.assertTrue(r.get(2) == 6);
+        Assert.assertTrue(r.get(3) == 7);
+        
+        r = Operations.leavesNS("nf_f2_d3", 2);
+        Assert.assertTrue(r.size() == 2);
+        Assert.assertTrue(r.get(0) == 3);
+        Assert.assertTrue(r.get(1) == 4);
+        
+        r = Operations.leavesNS("nf_f2_d3", 3);
+        Assert.assertTrue(r.size() == 1);
+        Assert.assertTrue(r.get(0) == 3);
+    }
 }
