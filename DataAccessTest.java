@@ -9,7 +9,7 @@ public class DataAccessTest
         for(int i = 0; i < 10; i++)
         {
             t.reset();
-            int id = Operations.GetRootAL("nf_f6_d8", 335923);
+            int id = Operations.rootAL("nf_f6_d8", 335923);
             System.out.println(t.timeSec() + "    " + id);
         }
 
@@ -18,7 +18,7 @@ public class DataAccessTest
         for(int i = 0; i < 10; i++)
         {
             t.reset();
-            int id = Operations.GetRootNS("nf_f6_d8", 335923);
+            int id = Operations.rootNS("nf_f6_d8", 335923);
             System.out.println(t.timeSec() + "    " + id);
         }
     }
