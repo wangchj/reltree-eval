@@ -7,6 +7,8 @@ import java.util.Properties;
 
 public class Database
 {
+    private static Connection con;
+    
     public static Connection connect() throws IOException, SQLException
     {
         return connect("config.txt");
@@ -28,6 +30,18 @@ public class Database
             p.getProperty("db.user"),
             p.getProperty("db.pwd")
         );
+        return con;
+    }
+    
+    /**
+     * Get a connection to the database. If there already exist an open connection,
+     * it will be returned; else, connect() will be called to create a new connection,
+     * and returned next time this method is called.
+     */
+    public static Connection getConnection() throws IOException, SQLException
+    {
+        if(con == null)
+            con = connect();
         return con;
     }
 }
