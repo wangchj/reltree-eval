@@ -43,6 +43,15 @@ public class Timer
     }
     
     /**
+     * Returns elasped time in milliseconds
+     */
+    public double timeMs()
+    {
+        long time = time();
+        return time / 1000000d;
+    }
+    
+    /**
      * Returns elapsed time in seconds.
      */
     public double timeSec()
