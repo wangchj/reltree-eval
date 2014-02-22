@@ -119,6 +119,14 @@ public class OperationsTest
         Assert.assertTrue(Operations.heightAL("nf_f3_d4", 1) == 4);
     }
     
+    @Test public void heightNS() throws Exception
+    {
+        Assert.assertTrue(Operations.heightNS("nf_f2_d3", 1) == 3);
+        Assert.assertTrue(Operations.heightNS("nf_f2_d3", 2) == 2);
+        
+        Assert.assertTrue(Operations.heightNS("nf_f3_d4", 1) == 4);
+    }
+    
     @Test public void depthAL() throws Exception
     {
         Assert.assertTrue(Operations.depthAL("nf_f2_d3", 1) == 1); //root node
@@ -127,5 +135,32 @@ public class OperationsTest
         Assert.assertTrue(Operations.depthAL("nf_f2_d3", 4) == 3);
         
         //Assert.assertTrue(Operations.depthAL("nf_f3_d4", 1) == 4);
+    }
+    
+    @Test public void depthNS() throws Exception
+    {
+        Assert.assertTrue(Operations.depthNS("nf_f2_d3", 1) == 1); //root node
+        Assert.assertTrue(Operations.depthNS("nf_f2_d3", 2) == 2);
+        Assert.assertTrue(Operations.depthNS("nf_f2_d3", 3) == 3);
+        Assert.assertTrue(Operations.depthNS("nf_f2_d3", 4) == 3);
+        
+        Assert.assertTrue(Operations.depthNS("nf_f3_d3", 3) == 3);
+        
+        Assert.assertTrue(Operations.depthNS("nf_f4_d8", 21845) == 8);
+    }
+    
+    @Test public void getLR() throws Exception
+    {
+        int[] r = Operations.getLR("nf_f2_d3", 1);
+        Assert.assertTrue(r[0] == 0);
+        Assert.assertTrue(r[1] == 13);
+        
+        r = Operations.getLR("nf_f2_d3", 2);
+        Assert.assertTrue(r[0] == 1);
+        Assert.assertTrue(r[1] == 6);
+        
+        r = Operations.getLR("nf_f3_d3", 13);
+        Assert.assertTrue(r[0] == 22);
+        Assert.assertTrue(r[1] == 23);
     }
 }

@@ -171,9 +171,25 @@ public class Operations {
         return max + 1;
     }
     
+    /**
+     * Height operation of nested sets model.
+     * @param table The name of the table that contains the nodes.
+     * @param nodeId ID of the node to find the height.
+     * @return Height of subtree rooted at node of nodeId.
+     */
     public static int heightNS(String table, int nodeId) throws Exception
     {
-        return 0;
+        //Get leaf nodes
+        ArrayList<Integer> leaves = leavesNS(table, nodeId);
+        
+        int max = 0;
+        for(int leaf : leaves)
+        {
+            int depth = depthNS(table, leaf, nodeId);
+            if(depth > max)
+                max = depth;
+        }
+        return max;
     }
     
     /**
@@ -204,4 +220,67 @@ public class Operations {
 
         return depth;
     }
+    
+    /**
+     * Depth operation for nested sets model.
+     * @param table the name of the table that contains the nodes.
+     * @param nodeId the id of the node to find depth.
+     * @return the depth of the node of nodeId.
+     */
+     public static int depthNS(String table, int nodeId) throws Exception
+     {
+        Connection con = Database.getConnection();
+        Statement s = con.createStatement();
+        //Get the left and right values
+        int[] lr = getLR(table, nodeId);
+        //Get the count of nodes on path
+        String query = String.format("select count(*) from %1$s where l <= %2$d and r >= %3$d", table, lr[0], lr[1]);
+        ResultSet r = s.executeQuery(query);
+        if(!r.next())
+            throw new Exception("Query returned no result.");
+        return r.getInt(1);
+     }
+     
+     /**
+     * Depth operation for nested sets model.
+     * @param table The name of the table that contains the nodes.
+     * @param nodeId The id of the node to find depth.
+     * @param rootId Node ID of the root. This does not have to be absolute root of the tree.
+     * @return The depth of the node of nodeId.
+     */
+     public static int depthNS(String table, int nodeId, int rootId) throws Exception
+     {
+        Connection con = Database.getConnection();
+        Statement s = con.createStatement();
+        //Get the left and right values
+        int[] lr = getLR(table, nodeId);
+        int[] rootlr = getLR(table, rootId);
+        
+        //Get the count of nodes on path
+        String query = String.format("select count(*) from %1$s where l <= %2$d and r >= %3$d and l >= %4$d and r <= %5$d", table, lr[0], lr[1], rootlr[0], rootlr[1]);
+        ResultSet r = s.executeQuery(query);
+        if(!r.next())
+            throw new Exception("Query returned no result.");
+        return r.getInt(1);
+     }
+     
+     /**
+      * Gets left and right values of the node identified by nodeId.
+      * @param table the name of the table that contains the nodes.
+      * @param nodeId the id of the node to find left and right values.
+      * @return An array a, where a[0] is the left and a[1] is the right. If nodeId does not exist, null is returned.
+      */
+     public static int[] getLR(String table, int nodeId) throws Exception
+     {
+        Connection con = Database.getConnection();
+        Statement s = con.createStatement();
+        String query = String.format("select l, r from %1$s where id=%2$d", table, nodeId);
+        ResultSet r = s.executeQuery(query);
+        if(!r.next())
+            return null;
+        int[] res = new int[2];
+        res[0] = r.getInt("l");
+        res[1] = r.getInt("r");
+        return res;
+     }
 }
