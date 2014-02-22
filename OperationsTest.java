@@ -163,4 +163,41 @@ public class OperationsTest
         Assert.assertTrue(r[0] == 22);
         Assert.assertTrue(r[1] == 23);
     }
+    
+    @Test public void path() throws Exception
+    {
+        ArrayList<Integer> path = Operations.pathAL("nf_f2_d3", 1);
+        Assert.assertTrue(path.size() == 1);
+        Assert.assertTrue(path.get(0) == 1);
+        
+        path = Operations.pathAL("nf_f2_d3", 3);
+        Assert.assertTrue(path.size() == 3);
+        Assert.assertTrue(path.get(0) == 1);
+        Assert.assertTrue(path.get(1) == 2);
+        Assert.assertTrue(path.get(2) == 3);
+        
+        path = Operations.pathAL("nf_f2_d3", 6);
+        Assert.assertTrue(path.size() == 3);
+        Assert.assertTrue(path.get(0) == 1);
+        Assert.assertTrue(path.get(1) == 5);
+        Assert.assertTrue(path.get(2) == 6);
+        
+        //NS Test cases
+        
+        path = Operations.pathNS("nf_f2_d3", 1);
+        Assert.assertTrue(path.size() == 1);
+        Assert.assertTrue(path.get(0) == 1);
+        
+        path = Operations.pathNS("nf_f2_d3", 3);
+        Assert.assertTrue(path.size() == 3);
+        Assert.assertTrue(path.get(0) == 1);
+        Assert.assertTrue(path.get(1) == 2);
+        Assert.assertTrue(path.get(2) == 3);
+        
+        path = Operations.pathNS("nf_f2_d3", 6);
+        Assert.assertTrue(path.size() == 3);
+        Assert.assertTrue(path.get(0) == 1);
+        Assert.assertTrue(path.get(1) == 5);
+        Assert.assertTrue(path.get(2) == 6);
+    }
 }

@@ -16,7 +16,7 @@ public class Operations {
      */
     public static int rootAL(String tableName, int nodeId) throws IOException, SQLException
     {
-        Connection con = Database.connect();
+        Connection con = Database.getConnection();
         Statement s = con.createStatement();
 
         //Check nodeId is valid
@@ -45,7 +45,7 @@ public class Operations {
      */
     public static int rootNS(String tableName, int nodeId) throws IOException, SQLException
     {
-        Connection con = Database.connect();
+        Connection con = Database.getConnection();
         Statement s = con.createStatement();
 
         //Check nodeId is valid
@@ -68,7 +68,7 @@ public class Operations {
      */
     public static ArrayList<Integer> siblings(String tableName, int nodeId) throws IOException, SQLException
     {
-        Connection con = Database.connect();
+        Connection con = Database.getConnection();
         Statement s = con.createStatement();
         String query = String.format("select * from %1$s where parent=(select parent from %1$s where id = %2$d) and id != %2$d", tableName, nodeId);
         ResultSet rs = s.executeQuery(query);
@@ -135,7 +135,7 @@ public class Operations {
      */
     public static ArrayList<Integer> leavesNS(String tableName, int nodeId) throws Exception
     {
-        Connection con = Database.connect();
+        Connection con = Database.getConnection();
         Statement s = con.createStatement();
         String query = String.format(
             "select * from %1$s n inner join " +
@@ -283,4 +283,64 @@ public class Operations {
         res[1] = r.getInt("r");
         return res;
      }
+     
+     /**
+     * Path operation for adjacency list model.
+     * @param table the name of the table that contains the nodes.
+     * @param nodeId the id of the node to find the path.
+     * @return Path to node or null if nodeId is invalid.
+     */
+     public static ArrayList<Integer> pathAL(String table, int nodeId) throws Exception
+     {
+        Connection con = Database.getConnection();
+        Statement s = con.createStatement();
+
+        //Check nodeId is valid
+        ResultSet r = s.executeQuery("select * from " + table + " where id=" + nodeId);
+        if(!r.next())
+            return null;
+
+        ArrayList<Integer> res = new ArrayList<Integer>();
+        int parent = r.getInt("parent");
+        res.add(r.getInt("id"));
+        
+        while(parent != 0)
+        {
+            r = s.executeQuery("select * from " + table + " where id=" + parent);
+            r.next();
+            res.add(r.getInt("id"));
+            parent = r.getInt("parent");
+        }
+
+        java.util.Collections.reverse(res);
+        return res;
+     }
+     
+     /**
+     * Path operation for nested sets model.
+     * @param table the name of the table that contains the nodes.
+     * @param nodeId the id of the node to find the path.
+     * @return Path to node or null if nodeId is invalid.
+     */
+     public static ArrayList<Integer> pathNS(String table, int nodeId) throws Exception
+     {
+        Connection con = Database.getConnection();
+        Statement s = con.createStatement();
+        ArrayList<Integer> res = new ArrayList<Integer>();
+        
+        //Get the left and right values
+        int[] lr = getLR(table, nodeId);
+        
+        //Get the count of nodes on path
+        String query = String.format("select * from %1$s where l <= %2$d and r >= %3$d", table, lr[0], lr[1]);
+        ResultSet r = s.executeQuery(query);
+        
+        while(r.next())
+            res.add(r.getInt("id"));
+            
+        if(res.isEmpty())
+            return null;
+            
+        return res;
+    }
 }
