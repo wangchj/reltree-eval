@@ -90,6 +90,9 @@ public class OperationsTest
         Assert.assertTrue(r.get(6) == 11);
         Assert.assertTrue(r.get(7) == 12);
         Assert.assertTrue(r.get(8) == 13);
+        
+        r = Operations.leavesAL("nf_f4_d6", 1);
+        Assert.assertTrue(r.size() == 1024);
     }
     
     @Test public void leavesNS() throws Exception
