@@ -203,4 +203,46 @@ public class OperationsTest
         Assert.assertTrue(path.get(1) == 5);
         Assert.assertTrue(path.get(2) == 6);
     }
+    
+    @Test public void memberAL() throws Exception
+    {
+        Assert.assertTrue(Operations.memberAL("nf_f2_d3", 1 ,1));
+        Assert.assertTrue(Operations.memberAL("nf_f2_d3", 2, 1));
+        Assert.assertTrue(Operations.memberAL("nf_f2_d3", 3, 1));
+        Assert.assertTrue(Operations.memberAL("nf_f2_d3", 7, 1));
+        Assert.assertTrue(Operations.memberAL("nf_f2_d3", 3, 2));
+        
+        Assert.assertFalse(Operations.memberAL("nf_f2_d3", 1, 2));
+        Assert.assertFalse(Operations.memberAL("nf_f2_d3", 2, 5));
+        Assert.assertFalse(Operations.memberAL("nf_f2_d3", 7, 2));
+        
+        Assert.assertTrue(Operations.memberAL("nf_f3_d3", 1 ,1));
+        Assert.assertTrue(Operations.memberAL("nf_f3_d3", 2, 1));
+        Assert.assertTrue(Operations.memberAL("nf_f3_d3", 6, 1));
+        Assert.assertTrue(Operations.memberAL("nf_f3_d3", 10, 1));
+        Assert.assertTrue(Operations.memberAL("nf_f3_d3", 13, 10));
+        
+        Assert.assertFalse(Operations.memberAL("nf_f3_d3", 1000, 1));
+    }
+    
+    @Test public void memberNS() throws Exception
+    {
+        Assert.assertTrue(Operations.memberNS("nf_f2_d3", 1 ,1));
+        Assert.assertTrue(Operations.memberNS("nf_f2_d3", 2, 1));
+        Assert.assertTrue(Operations.memberNS("nf_f2_d3", 3, 1));
+        Assert.assertTrue(Operations.memberNS("nf_f2_d3", 7, 1));
+        Assert.assertTrue(Operations.memberNS("nf_f2_d3", 3, 2));
+        
+        Assert.assertFalse(Operations.memberNS("nf_f2_d3", 1, 2));
+        Assert.assertFalse(Operations.memberNS("nf_f2_d3", 2, 5));
+        Assert.assertFalse(Operations.memberNS("nf_f2_d3", 7, 2));
+        
+        Assert.assertTrue(Operations.memberNS("nf_f3_d3", 1 ,1));
+        Assert.assertTrue(Operations.memberNS("nf_f3_d3", 2, 1));
+        Assert.assertTrue(Operations.memberNS("nf_f3_d3", 6, 1));
+        Assert.assertTrue(Operations.memberNS("nf_f3_d3", 10, 1));
+        Assert.assertTrue(Operations.memberNS("nf_f3_d3", 13, 10));
+        
+        Assert.assertFalse(Operations.memberAL("nf_f3_d3", 1000, 1));
+    }
 }

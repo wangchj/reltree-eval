@@ -343,4 +343,74 @@ public class Operations {
             
         return res;
     }
+    
+    /**
+     * Member operation for adjacency list model.
+     * @param table the name of the table that contains the nodes.
+     * @param dnode id of the descendent node.
+     * @param anode id of the acescendent node.
+     * @return true if denode is a descendent of anode; false otherwise.
+     */
+    public static boolean memberAL(String table, int dnode, int anode) throws Exception
+    {
+        if(dnode == anode)
+            return true;
+            
+        Connection con = Database.getConnection();
+        Statement s = con.createStatement();
+
+        ResultSet r = s.executeQuery("select * from " + table + " where id=" + dnode);
+        if(!r.next())
+            return false;
+
+        int parent = r.getInt("parent");
+        
+        while(parent != 0)
+        {
+            if(parent == anode)
+                return true;
+                
+            r = s.executeQuery("select * from " + table + " where id=" + parent);
+            r.next();
+            parent = r.getInt("parent");
+        }
+
+        return false;
+    }
+    
+    /**
+     * Member operation for adjacency list model.
+     * @param table the name of the table that contains the nodes.
+     * @param dnode id of the descendent node.
+     * @param anode id of the acescendent node.
+     * @return true if denode is a descendent of anode; false otherwise.
+     */
+    public static boolean memberNS(String table, int dnode, int anode) throws Exception
+    {
+        if(dnode == anode)
+            return true;
+        
+        int dl, dr, al, ar;
+        
+        Connection con = Database.getConnection();
+        Statement s = con.createStatement();
+        ResultSet r;
+        
+        r = s.executeQuery("select * from " + table + " where id=" + dnode);
+        if(!r.next())
+            return false;
+        
+        dl = r.getInt("l");
+        dr = r.getInt("r");
+        
+        r = s.executeQuery("select * from " + table + " where id=" + anode);
+        if(!r.next())
+            return false;
+        
+        al = r.getInt("l");
+        ar = r.getInt("r");
+        
+        return al < dl && ar > dr;
+    }
+    
 }
