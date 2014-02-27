@@ -32,6 +32,9 @@ end $$
 
 /**
  * Recursive version of leaveAL. This should NOT be called directly.
+ *
+ * Reference:
+ * 1. http://bugs.mysql.com/bug.php?id=28227
  */
 create procedure leavesALRec(tableName varchar(15), nodeId int)
 begin
