@@ -14,7 +14,7 @@ enum Operation
 /**
  * A list of relational data models (algorithms) in which the operations are implemented.
  */ 
-enum Algo
+enum Algorithm
 {
     AL, //Adjacency list
     NS, //Nested Setspara
