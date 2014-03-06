@@ -20,18 +20,20 @@ public class Operations {
         Statement s = con.createStatement();
 
         //Check nodeId is valid
-        ResultSet r = s.executeQuery("select * from " + tableName + " where id=" + nodeId);
-        if(!r.next()) return -1;
+        ResultSet r = s.executeQuery("select id, parent from " + tableName + " where id=" + nodeId);
+        if(!r.next()) {s.close(); return -1;}
 
         int parent = r.getInt("parent");
         int id = r.getInt("id");
         while(parent != 0)
         {
-            r = s.executeQuery("select * from " + tableName + " where id=" + parent);
+            r = s.executeQuery("select id, parent from " + tableName + " where id=" + parent);
             r.next();
             parent = r.getInt("parent");
             id = r.getInt("id");
         }
+
+        s.close();
 
         return id;
     }
@@ -49,15 +51,17 @@ public class Operations {
         Statement s = con.createStatement();
 
         //Check nodeId is valid
-        ResultSet rset = s.executeQuery("select * from " + tableName + " where id=" + nodeId);
-        if(!rset.next()) return -1;
+        ResultSet rset = s.executeQuery("select l, r from " + tableName + " where id=" + nodeId);
+        if(!rset.next()) {s.close(); return -1;}
 
         int l = rset.getInt("l");
         int r = rset.getInt("r");
-        String query = String.format("select * from %1s where l<= %2d and r >= %3d and parent is NULL", tableName, l, r);
+        String query = String.format("select id from %1s where l<= %2d and r >= %3d and parent is NULL", tableName, l, r);
         rset = s.executeQuery(query);
         rset.next();
-        return rset.getInt("id");
+        int result = rset.getInt("id");
+        s.close();
+        return result;
     }
     
     /**
@@ -70,13 +74,14 @@ public class Operations {
     {
         Connection con = Database.getConnection();
         Statement s = con.createStatement();
-        String query = String.format("select * from %1$s where parent=(select parent from %1$s where id = %2$d) and id != %2$d", tableName, nodeId);
+        String query = String.format("select id from %1$s where parent=(select parent from %1$s where id = %2$d) and id != %2$d", tableName, nodeId);
         ResultSet rs = s.executeQuery(query);
         ArrayList<Integer> result = new ArrayList<Integer>();
         while(rs.next())
         {
             result.add(rs.getInt("id"));
         }
+        s.close();
         return result;
     }
     
@@ -90,11 +95,12 @@ public class Operations {
     {
         Connection con = Database.getConnection();
         Statement s = con.createStatement();
-        String query = String.format("select * from %1$s where parent=%2$d", tableName, nodeId);
+        String query = "select id from " + tableName + " where parent=" + nodeId;
         ResultSet rs = s.executeQuery(query);
         ArrayList<Integer> result = new ArrayList<Integer>();
         while(rs.next())
             result.add(rs.getInt("id"));
+        s.close();
         return result;
     }
     
@@ -138,7 +144,7 @@ public class Operations {
         Connection con = Database.getConnection();
         Statement s = con.createStatement();
         String query = String.format(
-            "select * from %1$s n inner join " +
+            "select id from %1$s n inner join " +
             "(select l, r from %1$s where id=%2$d) lr " +
             "on (n.l >= lr.l and n.r <= lr.r) " +
             "where not exists (select id from %1$s where parent=n.id);",
@@ -147,6 +153,7 @@ public class Operations {
         ArrayList<Integer> result = new ArrayList<Integer>();
         while(rs.next())
             result.add(rs.getInt("id"));
+        s.close();
         return result;
     }
     
@@ -204,8 +211,8 @@ public class Operations {
         Statement s = con.createStatement();
 
         //Check nodeId is valid
-        ResultSet r = s.executeQuery("select * from " + table + " where id=" + nodeId);
-        if(!r.next()) throw new Exception("nodeId is invalid");
+        ResultSet r = s.executeQuery("select parent from " + table + " where id=" + nodeId);
+        if(!r.next()){s.close();  throw new Exception("nodeId is invalid");}
 
         int depth = 1;
         int parent = r.getInt("parent");
@@ -213,10 +220,12 @@ public class Operations {
         while(parent != 0)
         {
             depth++;
-            r = s.executeQuery("select * from " + table + " where id=" + parent);
+            r = s.executeQuery("select parent from " + table + " where id=" + parent);
             r.next();
             parent = r.getInt("parent");
         }
+
+        s.close();
 
         return depth;
     }
@@ -237,8 +246,14 @@ public class Operations {
         String query = String.format("select count(*) from %1$s where l <= %2$d and r >= %3$d", table, lr[0], lr[1]);
         ResultSet r = s.executeQuery(query);
         if(!r.next())
+        {
+            s.close();
             throw new Exception("Query returned no result.");
-        return r.getInt(1);
+        }
+
+        int res = r.getInt(1);
+        s.close();
+        return res;
      }
      
      /**
@@ -260,8 +275,15 @@ public class Operations {
         String query = String.format("select count(*) from %1$s where l <= %2$d and r >= %3$d and l >= %4$d and r <= %5$d", table, lr[0], lr[1], rootlr[0], rootlr[1]);
         ResultSet r = s.executeQuery(query);
         if(!r.next())
+        {
+            s.close();
             throw new Exception("Query returned no result.");
-        return r.getInt(1);
+        }
+
+        int res = r.getInt(1);
+        s.close();
+
+        return res;
      }
      
      /**
@@ -277,10 +299,17 @@ public class Operations {
         String query = String.format("select l, r from %1$s where id=%2$d", table, nodeId);
         ResultSet r = s.executeQuery(query);
         if(!r.next())
+        {
+            s.close();
             return null;
+        }
+
         int[] res = new int[2];
         res[0] = r.getInt("l");
         res[1] = r.getInt("r");
+
+        s.close();
+
         return res;
      }
      
@@ -296,9 +325,12 @@ public class Operations {
         Statement s = con.createStatement();
 
         //Check nodeId is valid
-        ResultSet r = s.executeQuery("select * from " + table + " where id=" + nodeId);
+        ResultSet r = s.executeQuery("select id, parent from " + table + " where id=" + nodeId);
         if(!r.next())
+        {
+            s.close();
             return null;
+        }
 
         ArrayList<Integer> res = new ArrayList<Integer>();
         int parent = r.getInt("parent");
@@ -306,11 +338,13 @@ public class Operations {
         
         while(parent != 0)
         {
-            r = s.executeQuery("select * from " + table + " where id=" + parent);
+            r = s.executeQuery("select id, parent from " + table + " where id=" + parent);
             r.next();
             res.add(r.getInt("id"));
             parent = r.getInt("parent");
         }
+
+        s.close();
 
         java.util.Collections.reverse(res);
         return res;
@@ -332,12 +366,14 @@ public class Operations {
         int[] lr = getLR(table, nodeId);
         
         //Get the count of nodes on path
-        String query = String.format("select * from %1$s where l <= %2$d and r >= %3$d", table, lr[0], lr[1]);
+        String query = String.format("select id from %1$s where l <= %2$d and r >= %3$d", table, lr[0], lr[1]);
         ResultSet r = s.executeQuery(query);
         
         while(r.next())
             res.add(r.getInt("id"));
-            
+        
+        s.close();
+
         if(res.isEmpty())
             return null;
             
@@ -359,9 +395,12 @@ public class Operations {
         Connection con = Database.getConnection();
         Statement s = con.createStatement();
 
-        ResultSet r = s.executeQuery("select * from " + table + " where id=" + dnode);
+        ResultSet r = s.executeQuery("select parent from " + table + " where id=" + dnode);
         if(!r.next())
+        {
+            s.close();
             return false;
+        }
 
         int parent = r.getInt("parent");
         
@@ -374,6 +413,8 @@ public class Operations {
             r.next();
             parent = r.getInt("parent");
         }
+
+        s.close();
 
         return false;
     }
@@ -396,20 +437,28 @@ public class Operations {
         Statement s = con.createStatement();
         ResultSet r;
         
-        r = s.executeQuery("select * from " + table + " where id=" + dnode);
+        r = s.executeQuery("select l, r from " + table + " where id=" + dnode);
         if(!r.next())
+        {
+            s.close();
             return false;
-        
+        }
+
         dl = r.getInt("l");
         dr = r.getInt("r");
         
-        r = s.executeQuery("select * from " + table + " where id=" + anode);
+        r = s.executeQuery("select l, r from " + table + " where id=" + anode);
         if(!r.next())
+        {
+            s.close();
             return false;
-        
+        }
+
         al = r.getInt("l");
         ar = r.getInt("r");
         
+        s.close();
+
         return al < dl && ar > dr;
     }
     
