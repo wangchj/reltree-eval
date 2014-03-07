@@ -1,14 +1,16 @@
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
+
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Experiment
 {
     public static void main(String[] args) throws Exception
     {
-        Operation op    = Operation.Root;
-        Algo      algo  = Algo.AL;
+        /*Operation op    = Operation.Root;
+        Algorithm algo  = Algorithm.AL;
         int       fan   = 6;
         int       depth = 8;
         int       runs  = 5;
@@ -19,7 +21,7 @@ public class Experiment
          
         System.out.println();
 
-        algo = Algo.NS;
+        algo = Algorithm.NS;
         r = time(op, algo, null, fan, depth, runs);
         for(int i = 0; i < r.length; i++)
             System.out.println(r[i]);
@@ -28,7 +30,7 @@ public class Experiment
         System.out.println();
 
         op   = Operation.Leaves;
-        algo = Algo.AL;
+        algo = Algorithm.AL;
         //r = time(op, algo, null, fan, depth, runs);
         //for(int i = 0; i < r.length; i++)
         //    System.out.println(r[i]);
@@ -36,10 +38,96 @@ public class Experiment
         System.out.println();
 
         //op   = Operation.Leaves;
-        algo = Algo.NS;
+        algo = Algorithm.NS;
         r = time(op, algo, null, fan, depth, runs);
         for(int i = 0; i < r.length; i++)
-            System.out.println(r[i]);
+            System.out.println(r[i]);*/
+        
+        autoScan();
+        
+//         double[] r = time(Operation.Leaves, Algorithm.AL, null, 4, 9, 1);
+//         for(double d : r)
+//             System.out.println(d);
+    }
+    
+    static void autoScan()
+    {
+        //The number of trails
+        int defaultTrialCount = 5;
+
+        //If an experiment needs different number of trials than the default, it can be specified here.
+        //The key is the name of the operation plus algorithm. For example: "RootAL".
+        HashMap<String, Integer> trialCount = new HashMap<String, Integer>();
+        trialCount.put("LeavesAL", 1);
+        
+        //A Hashmap of 2D arrays used as tables to hold average of running time.
+        HashMap<String, ArrayList<ArrayList<Double>>> averages = new HashMap<String, ArrayList<ArrayList<Double>>>();
+
+        for(Operation op : Operation.values())
+        {
+            for(Algorithm al : Algorithm.values())
+            {
+                //A set of average values
+                ArrayList<ArrayList<Double>> table = new ArrayList<ArrayList<Double>>();
+                averages.put(op.toString() + al.toString(), table);
+
+                for(int order = 2; order <= 10; order++)
+                {
+                    //A row -> same order, increasing depth
+                    ArrayList<Double> row = new ArrayList<Double>();
+                    table.add(row);
+
+                    for(int depth = 2; depth <=10; depth++)
+                    {
+                        System.out.printf("%s\t%s\tOrder: %d\tDepth: %d\n", op, al, order, depth);
+                        int run = trialCount.containsKey(op.toString() + al.toString()) ? trialCount.get(op.toString() + al.toString()) : defaultTrialCount;
+                        try
+                        {
+                            double[] r = time(op, al, null, order, depth, run);
+                            
+                            //Print out run time for each trial
+                            for(int i = 0; i < r.length; i++)
+                            {
+                                System.out.print(r[i]);
+                                if(i != r.length - 1)
+                                    System.out.print(' ');
+                            }
+                            
+                            System.out.println();
+                            
+                            //Print out average time of trials
+                            double avg = average(r);
+                            row.add(avg);
+                            System.out.println("Average: " + average(r));
+                        }
+                        catch(Exception ex)
+                        {
+                            row.add(0.0);
+                            System.out.println(ex);
+                        }
+                        
+                        System.out.println();
+                    }
+                } 
+            }
+        }
+
+        //At the end, print out the result tables
+        for(String key : averages.keySet())
+        {
+            System.out.println("Table for " + key);
+            ArrayList<ArrayList<Double>> table = averages.get(key);
+            for(ArrayList<Double> row : table)
+            {
+                for(double d : row)
+                {
+                    System.out.print(d);
+                    System.out.print('\t');
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }
     }
     
     /**
@@ -53,7 +141,7 @@ public class Experiment
      * @param runs   how many trials to run.
      * @return       Running time in milliseconds for each trial.
      */
-    public static double[] time(Operation op, Algo algo, HashMap<String, Object> params,
+    public static double[] time(Operation op, Algorithm algo, HashMap<String, Object> params,
         int fan, int depth, int runs) throws Exception
     {
         double[] res = new double[runs];
@@ -68,13 +156,13 @@ public class Experiment
         
         for(int i = -1; i < runs; i++)
         {
-            if(op == Operation.Root && algo == Algo.AL)
+            if(op == Operation.Root && algo == Algorithm.AL)
             {
                 timer.reset();
                 Operations.rootAL(table, maxId);
                 time = timer.timeMs();
             }
-            if(op == Operation.Root && algo == Algo.NS)
+            if(op == Operation.Root && algo == Algorithm.NS)
             {
                 timer.reset();
                 Operations.rootNS(table, maxId);
@@ -82,13 +170,13 @@ public class Experiment
             }
             
             //Leaves
-            if(op == Operation.Leaves && algo == Algo.AL)
+            if(op == Operation.Leaves && algo == Algorithm.AL)
             {
                 timer.reset();
                 Operations.leavesAL(table, minId);
                 time = timer.timeMs();
             }
-            if(op == Operation.Leaves && algo == Algo.NS)
+            if(op == Operation.Leaves && algo == Algorithm.NS)
             {
                 timer.reset();
                 Operations.leavesNS(table, minId);
@@ -96,13 +184,13 @@ public class Experiment
             }
             
             //Height
-            if(op == Operation.Height && algo == Algo.AL)
+            if(op == Operation.Height && algo == Algorithm.AL)
             {
                 timer.reset();
                 Operations.heightAL(table, minId);
                 time = timer.timeMs();
             }
-            if(op == Operation.Height && algo == Algo.NS)
+            if(op == Operation.Height && algo == Algorithm.NS)
             {
                 timer.reset();
                 Operations.heightNS(table, minId);
@@ -110,13 +198,13 @@ public class Experiment
             }
             
             //Depth
-            if(op == Operation.Depth && algo == Algo.AL)
+            if(op == Operation.Depth && algo == Algorithm.AL)
             {
                 timer.reset();
                 Operations.depthAL(table, maxId);
                 time = timer.timeMs();
             }
-            if(op == Operation.Depth && algo == Algo.NS)
+            if(op == Operation.Depth && algo == Algorithm.NS)
             {
                 timer.reset();
                 Operations.depthNS(table, maxId);
@@ -124,13 +212,13 @@ public class Experiment
             }
             
             //Path
-            if(op == Operation.Path && algo == Algo.AL)
+            if(op == Operation.Path && algo == Algorithm.AL)
             {
                 timer.reset();
                 Operations.pathAL(table, maxId);
                 time = timer.timeMs();
             }
-            if(op == Operation.Path && algo == Algo.NS)
+            if(op == Operation.Path && algo == Algorithm.NS)
             {
                 timer.reset();
                 Operations.pathNS(table, maxId);
@@ -181,5 +269,15 @@ public class Experiment
         ResultSet r = s.executeQuery("select max(id) from " + table);
         r.next();
         return r.getInt(1);
+    }
+    
+    static double average(double[] a)
+    {
+        if(a == null || a.length == 0)
+            return 0;
+        double sum = 0;
+        for(double d : a)
+            sum += d;
+        return sum / a.length;
     }
 }
