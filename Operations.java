@@ -65,6 +65,24 @@ public class Operations {
     }
     
     /**
+     * Root operation via adjacency list model implemented in mysql stored routine.
+     * @param table  name of the table to run query.
+     * @param nodeId the ID of the starting node. This node must be in the table specified by tableName.
+     * @return ID of the root node; -1 if failure.
+     */
+    public static int rootSR(String table, int nodeId) throws IOException, SQLException
+    {
+        Connection con = Database.getConnection();
+        try(Statement  s   = con.createStatement())
+        {
+            ResultSet  rs  = s.executeQuery("call rootAL('" + table + "'," + nodeId + ")");
+            if(!rs.next())
+                return -1;
+            return rs.getInt(1);
+        }
+    }
+    
+    /**
      * Siblings operation via adjacency list relational model. This method returns id of
      * nodes that are siblings of the node identified by nodeId.
      * @param tableName The name of the table that contains the nodes.
@@ -158,6 +176,26 @@ public class Operations {
     }
     
     /**
+     * Leaves operation of adjacency list model implemented in MySQL stored routine.
+     * @param table  name of the table that contains the nodes.
+     * @param nodeId id of the node under which the leaves reside.
+     * @return The ID of the leaf nodes under the node of nodeId.
+     */
+    public static ArrayList<Integer> leavesSR(String table, int nodeId) throws Exception
+    {
+        Connection con = Database.getConnection();
+        String query = "call leavesAL('" + table + "'," + nodeId + ")";
+        try(Statement s = con.createStatement())
+        {
+            ResultSet rs = s.executeQuery(query);
+            ArrayList<Integer> result = new ArrayList<Integer>();
+            while(rs.next())
+                result.add(rs.getInt("nodeId"));
+            return result;
+        }
+    }
+    
+    /**
      * Height operation for the adjacency list model.
      * @param table The name of the table that contains the nodes.
      * @param nodeId ID of the node to find the height.
@@ -197,6 +235,25 @@ public class Operations {
                 max = depth;
         }
         return max;
+    }
+    
+    /**
+     * Height operation of the adjacency list model implemented in MySQL stored routine.
+     * @param table  name of the table that contains the nodes.
+     * @param nodeId id of the node to find the height.
+     * @return Height of subtree rooted at node of nodeId.
+     */
+    public static int heightSR(String table, int nodeId) throws Exception
+    {
+    
+        Connection con = Database.getConnection();
+        String query = "call heightAL('" + table + "'," + nodeId + ")";
+        try(Statement s = con.createStatement())
+        {
+            ResultSet rs = s.executeQuery(query);
+            rs.next();
+            return rs.getInt(1);
+        }
     }
     
     /**

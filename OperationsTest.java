@@ -21,6 +21,13 @@ public class OperationsTest
         Assert.assertTrue(Operations.rootNS("nf_f6_d8", 335923) == 1);
     }
     
+    @Test public void rootSR() throws Exception
+    {
+        Assert.assertTrue(Operations.rootSR("nf_f2_d3", 1) == 1);
+        Assert.assertTrue(Operations.rootSR("nf_f2_d3", 2) == 1);
+        Assert.assertTrue(Operations.rootSR("nf_f6_d8", 335923) == 1);
+    }
+    
     @Test public void children() throws Exception
     {
         ArrayList<Integer> r = Operations.children("nf_f2_d3", 1);
@@ -114,6 +121,40 @@ public class OperationsTest
         Assert.assertTrue(r.get(0) == 3);
     }
     
+    @Test public void leavesSR() throws Exception
+    {
+        ArrayList<Integer> r = Operations.leavesSR("nf_f2_d3", 1);
+        Assert.assertTrue(r.size() == 4);
+        Assert.assertTrue(r.get(0) == 3);
+        Assert.assertTrue(r.get(1) == 4);
+        Assert.assertTrue(r.get(2) == 6);
+        Assert.assertTrue(r.get(3) == 7);
+        
+        r = Operations.leavesSR("nf_f2_d3", 2);
+        Assert.assertTrue(r.size() == 2);
+        Assert.assertTrue(r.get(0) == 3);
+        Assert.assertTrue(r.get(1) == 4);
+        
+        r = Operations.leavesSR("nf_f2_d3", 3);
+        Assert.assertTrue(r.size() == 1);
+        Assert.assertTrue(r.get(0) == 3);
+        
+        r = Operations.leavesSR("nf_f3_d3", 1);
+        Assert.assertTrue(r.size() == 9);
+        Assert.assertTrue(r.get(0) == 3);
+        Assert.assertTrue(r.get(1) == 4);
+        Assert.assertTrue(r.get(2) == 5);
+        Assert.assertTrue(r.get(3) == 7);
+        Assert.assertTrue(r.get(4) == 8);
+        Assert.assertTrue(r.get(5) == 9);
+        Assert.assertTrue(r.get(6) == 11);
+        Assert.assertTrue(r.get(7) == 12);
+        Assert.assertTrue(r.get(8) == 13);
+        
+        r = Operations.leavesSR("nf_f4_d6", 1);
+        Assert.assertTrue(r.size() == 1024);
+    }
+    
     @Test public void heightAL() throws Exception
     {
         Assert.assertTrue(Operations.heightAL("nf_f2_d3", 1) == 3);
@@ -128,6 +169,14 @@ public class OperationsTest
         Assert.assertTrue(Operations.heightNS("nf_f2_d3", 2) == 2);
         
         Assert.assertTrue(Operations.heightNS("nf_f3_d4", 1) == 4);
+    }
+    
+    @Test public void heightSR() throws Exception
+    {
+        Assert.assertTrue(Operations.heightSR("nf_f2_d3", 1) == 3);
+        Assert.assertTrue(Operations.heightSR("nf_f2_d3", 2) == 2);
+        
+        Assert.assertTrue(Operations.heightSR("nf_f3_d4", 1) == 4);
     }
     
     @Test public void depthAL() throws Exception
