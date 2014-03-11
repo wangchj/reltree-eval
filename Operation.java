@@ -18,4 +18,5 @@ enum Algorithm
 {
     AL, //Adjacency list
     NS, //Nested Setspara
+    SR  //Adjacency list, stored routine
 }
