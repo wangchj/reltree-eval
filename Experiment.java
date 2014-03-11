@@ -105,6 +105,13 @@ public class Experiment
                             row.add(0.0);
                             System.out.println(ex);
                         }
+                        finally
+                        {
+                            //Call garbage collection
+                            System.gc();
+                            //Sleep for 10 secs
+                            //Thread.sleep(10000);
+                        }
                         
                         System.out.println();
                     }
@@ -168,6 +175,12 @@ public class Experiment
                 Operations.rootNS(table, maxId);
                 time = timer.timeMs();
             }
+            if(op == Operation.Root && algo == Algorithm.SR)
+            {
+                timer.reset();
+                Operations.rootSR(table, maxId);
+                time = timer.timeMs();
+            }
             
             //Leaves
             if(op == Operation.Leaves && algo == Algorithm.AL)
@@ -182,6 +195,12 @@ public class Experiment
                 Operations.leavesNS(table, minId);
                 time = timer.timeMs();
             }
+            if(op == Operation.Leaves && algo == Algorithm.SR)
+            {
+                timer.reset();
+                Operations.leavesSR(table, minId);
+                time = timer.timeMs();
+            }
             
             //Height
             if(op == Operation.Height && algo == Algorithm.AL)
@@ -194,6 +213,12 @@ public class Experiment
             {
                 timer.reset();
                 Operations.heightNS(table, minId);
+                time = timer.timeMs();
+            }
+            if(op == Operation.Height && algo == Algorithm.SR)
+            {
+                timer.reset();
+                Operations.heightSR(table, minId);
                 time = timer.timeMs();
             }
             
@@ -227,6 +252,9 @@ public class Experiment
             
             if(i != -1)
                 res[i] = time;
+            
+            //Run garbage collector
+            System.gc();
         }
         return res;
     }
