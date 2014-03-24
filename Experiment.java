@@ -50,11 +50,21 @@ public class Experiment
 //             System.out.println(d);
     }
     
-    static void autoScan()
+    /**
+     * Runs time() for the operations and algorithms specified in ops, and als.
+     *
+     * @param ops A list of operations to run. If null, all opeartions will be run.
+     * @param als A list of algorithms that implement the operations to run. If null, all algorithms will be run for each operation.
+     */
+    static void autoScan(Operation[] ops, Algorithm[] als)
     {
         //The number of trails
         int defaultTrialCount = 5;
 
+        //If ops or als is null, run everything
+        if(ops == null) ops = Operation.values();
+        if(als == null) als = Algorithm.values();
+        
         //If an experiment needs different number of trials than the default, it can be specified here.
         //The key is the name of the operation plus algorithm. For example: "RootAL".
         HashMap<String, Integer> trialCount = new HashMap<String, Integer>();
@@ -63,9 +73,9 @@ public class Experiment
         //A Hashmap of 2D arrays used as tables to hold average of running time.
         HashMap<String, ArrayList<ArrayList<Double>>> averages = new HashMap<String, ArrayList<ArrayList<Double>>>();
 
-        for(Operation op : Operation.values())
+        for(Operation op : ops)
         {
-            for(Algorithm al : Algorithm.values())
+            for(Algorithm al : als)
             {
                 //A set of average values
                 ArrayList<ArrayList<Double>> table = new ArrayList<ArrayList<Double>>();
