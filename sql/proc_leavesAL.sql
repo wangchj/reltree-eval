@@ -1,3 +1,6 @@
+drop procedure if exists leavesAL;
+drop procedure if exists leavesALRec;
+
 delimiter $$
 
 /**
@@ -8,11 +11,12 @@ create procedure leavesAL(tableName varchar(15), nodeId int)
 begin
     -- Create temp tables
     create temporary table if not exists LeavesTable(
-        nodeId int not null unique
+        nodeId int primary key
     );
     create temporary table if not exists ChildTable(
-        parentId int,
-        childId int
+        parentId int not null,
+        childId int not null,
+        primary key (parentId, childId)
     );
     
     -- Set recursion depth 
