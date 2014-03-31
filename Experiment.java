@@ -3,51 +3,76 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.ArrayList;
 
 public class Experiment
 {
     public static void main(String[] args) throws Exception
     {
-        /*Operation op    = Operation.Root;
-        Algorithm algo  = Algorithm.AL;
-        int       fan   = 6;
-        int       depth = 8;
-        int       runs  = 5;
-           
-        double[] r = time(op, algo, null, fan, depth, runs);
-        for(int i = 0; i < r.length; i++)
-            System.out.println(r[i]);
-         
-        System.out.println();
-
-        algo = Algorithm.NS;
-        r = time(op, algo, null, fan, depth, runs);
-        for(int i = 0; i < r.length; i++)
-            System.out.println(r[i]);
-            
-         
-        System.out.println();
-
-        op   = Operation.Leaves;
-        algo = Algorithm.AL;
-        //r = time(op, algo, null, fan, depth, runs);
-        //for(int i = 0; i < r.length; i++)
-        //    System.out.println(r[i]);
+        ArrayList<JobSet> jobs = new ArrayList<JobSet>();
+        jobs.add(new JobSet(Operation.Height, Algorithm.AL, 8, 8, 5, null, 3));
+        jobs.add(new JobSet(Operation.Height, Algorithm.AL, 9, null, null, null, 3));
+        jobs.add(new JobSet(Operation.Height, Algorithm.AL, 10, null, null, null, 3));
+        jobs.add(new JobSet(Operation.Height, Algorithm.NS, null, null, null, null, 5));
+        jobs.add(new JobSet(Operation.Height, Algorithm.SR, null, null, null, null, 5));
+        runJobs(jobs);
         
-        System.out.println();
+        Operation[] o = {/*Operation.Height,*/ Operation.Depth, Operation.Path, Operation.Member};
+        autoScan(o, null);
+    }
+    
+    /**
+     * Run a set of specific experiments in jobsets.
+     * @param jobsets a set of specific jobs.
+     */
+    static void runJobs(List<JobSet> jobsets)
+    {
+        for(JobSet jobset : jobsets)
+        {
+            //A set of average values
+            //ArrayList<ArrayList<Double>> table = new ArrayList<ArrayList<Double>>();
+            //averages.put(op.toString() + al.toString(), table);
 
-        //op   = Operation.Leaves;
-        algo = Algorithm.NS;
-        r = time(op, algo, null, fan, depth, runs);
-        for(int i = 0; i < r.length; i++)
-            System.out.println(r[i]);*/
-        
-        autoScan();
-        
-//         double[] r = time(Operation.Leaves, Algorithm.AL, null, 4, 9, 1);
-//         for(double d : r)
-//             System.out.println(d);
+            for(int order : jobset.orders)
+            {
+                for(int depth : jobset.depths)
+                {
+                    System.out.printf("%s\t%s\tOrder: %d\tDepth: %d\n", jobset.op, jobset.al, order, depth);
+                    
+                    try
+                    {
+                        double[] r = time(jobset.op, jobset.al, null, order, depth, jobset.runs);
+                        
+                        //Print out run time for each trial
+                        for(int i = 0; i < r.length; i++)
+                        {
+                            System.out.print(r[i]);
+                            if(i != r.length - 1)
+                                System.out.print(' ');
+                        }
+                            
+                        System.out.println();
+                        
+                        //Print out average time of trials
+                        System.out.println("Average: " + average(r));
+                    }
+                    catch(Exception ex)
+                    {
+                        System.out.println(ex);
+                    }
+                    finally
+                    {
+                        //Call garbage collection
+                        System.gc();
+                        //Sleep for 10 secs
+                        //Thread.sleep(10000);
+                    }
+                        
+                    System.out.println();
+                }
+            } 
+        }
     }
     
     /**
@@ -309,6 +334,11 @@ public class Experiment
         return r.getInt(1);
     }
     
+    /**
+     * Calculates the average of a.
+     * @param a the array to calculate the average of.
+     * @return the average in double.
+     */
     static double average(double[] a)
     {
         if(a == null || a.length == 0)
@@ -317,5 +347,50 @@ public class Experiment
         for(double d : a)
             sum += d;
         return sum / a.length;
+    }
+    
+    /**
+     * A specific set of experiments to run.
+     */
+    static class JobSet
+    {
+        Operation op; //The operation
+        Algorithm al; //The implementation to use
+        int[] orders; //A set of orders. Ex: {3, 5, 8}
+        int[] depths; //A set of depths.
+        int runs;     //How many trials to run for this experiment.
+        
+        /**
+         * Constructor
+         */
+        public JobSet(Operation op, Algorithm al, int[] orders, int[] depths, int runs)
+        {
+            this.op = op;
+            this.al = al;
+            this.orders = orders;
+            this.depths = depths;
+            this.runs = runs;
+        }
+        
+        /**
+         * Constructor for consecutive orders, depths.
+         */
+        public JobSet(Operation op, Algorithm al, Integer minOrder, Integer maxOrder, Integer minDepth, Integer maxDepth, int runs)
+        {   
+            this(op, al, null, null, runs);
+            
+            if(minOrder == null) minOrder = 2;
+            if(maxOrder == null) maxOrder = 10;
+            if(minDepth == null) minDepth = 2;
+            if(maxDepth == null) maxDepth = 10;
+            
+            orders = new int[maxOrder + 1 - minOrder];
+            depths = new int[maxDepth + 1 - minDepth];
+            
+            for(int i = minOrder; i <= maxOrder; i++)
+                orders[i - minOrder] = i;
+            for(int i = minDepth; i <= maxDepth; i++)
+                depths[i - minDepth] = i;
+        }
     }
 }
